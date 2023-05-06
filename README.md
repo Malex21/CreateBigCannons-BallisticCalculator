@@ -37,7 +37,7 @@ I try to aim my cannon by putting my character head next to the block held by th
 
 ![angles](https://user-images.githubusercontent.com/96785178/236646396-8c34bdc7-cfea-48ee-acf8-0a54e753ecd0.png)
 
-## Misc
+## Issues
 
 If something is not working correctly, please make an issue here.
 
@@ -45,5 +45,6 @@ If the program says the angle is -30° (minimum angle) or 60° (maximum angle of
 
 ## Credits
 
-**@sashafiesta#1978 (Discord) :** Original formulas and principles, you can find their very good demonstration in the Create Big Cannons discord server (as of now, pinned in #showcase)
+**@sashafiesta#1978 (Discord) :** Original formulas and principles, you can find their very good demonstration in the Create Big Cannons discord server (as of now, pinned in #showcase).
+
 **@Malex#6461 (Me) :** Python adaptation, this user interface, some changes and improvements on the original formulas.
