@@ -61,7 +61,7 @@ def getAngles():
     try:
 
         angles = BallisticsToTarget(cannonCoords, targetCoords, int(powerEntry.get()), (directionEntry.get()).lower(), int(lenghtEntry.get()))
-
+        print(angles)
     except OutOfRangeException as e:
 
         statusMessage.set(e)
@@ -69,18 +69,39 @@ def getAngles():
 
     else:
 
-        varYaw.set("Yaw : " + str(angles[0]) + " degrees")
-        varPitch.set("Pitch : " + str(angles[1]) + " degrees")
-        varAirtime.set("Airtime in ticks : " + str(angles[2]) + " ticks")
-        varAirtimeSeconds.set("Airtime in seconds : " + str(angles[3]) + " seconds")
-        varFuzeTime.set("Time to put in fuze (in ticks) : " + str(angles[4]) + " ticks")
+        varYaw.set("Yaw : " + str(angles[0][0]) + " degrees")
+        varPitch.set("Pitch : " + str(angles[0][1]) + " degrees")
+        varAirtime.set("Airtime in ticks : " + str(angles[0][2]) + " ticks")
+        varAirtimeSeconds.set("Airtime in seconds : " + str(angles[0][3]) + " seconds")
+        varFuzeTime.set("Time to put in fuze (in ticks) : " + str(angles[0][4]) + " ticks")
+
+        varYaw2.set("Yaw : " + str(angles[1][0]) + " degrees")
+        varPitch2.set("Pitch : " + str(angles[1][1]) + " degrees")
+        varAirtime2.set("Airtime in ticks : " + str(angles[1][2]) + " ticks")
+        varAirtimeSeconds2.set("Airtime in seconds : " + str(angles[1][3]) + " seconds")
+        varFuzeTime2.set("Time to put in fuze (in ticks) : " + str(angles[1][4]) + " ticks")
+
+        # make the pitch red if it's too high or too low
+        if angles[0][1] == "Over 60" or angles[0][1] == "Under -30":
+            labelPitch.configure(text_color="#c06661")
+        else:
+            labelPitch.configure(text_color="#d6d6d6")
+        
+        if angles[1][1] == "Over 60" or angles[1][1] == "Under -30":
+            labelPitch2.configure(text_color="#c06661")
+        else:
+            labelPitch2.configure(text_color="#d6d6d6")
 
         statusMessage.set("Calculated !")
         status.configure(text_color="#50bc54")
 
 def main():
 
-    global xCannon, yCannon, zCannon, xTarget, yTarget, zTarget, lenghtEntry, powerEntry, directionEntry, button, statusMessage, status, varYaw, varPitch, varAirtime, varAirtimeSeconds, varFuzeTime
+    global xCannon, yCannon, zCannon, xTarget, yTarget, zTarget, lenghtEntry,\
+    powerEntry, directionEntry, button, statusMessage, status,\
+    varYaw, varPitch, varAirtime, varAirtimeSeconds, varFuzeTime,\
+    varYaw2, varPitch2, varAirtime2, varAirtimeSeconds2, varFuzeTime2,\
+    labelPitch, labelPitch2
 
     titre = ctk.CTkLabel(master=root, text="Ballistic Calculator", font=("Roboto", 60), fg_color="#1E538D", corner_radius=20)
 
@@ -132,6 +153,12 @@ def main():
     varAirtimeSeconds = ctk.StringVar(value = "Airtime (seconds) is unknown")
     varFuzeTime = ctk.StringVar(value = "Fuze time (ticks) is unknown")
 
+    varYaw2 = ctk.StringVar(value = "Yaw is unknown")
+    varPitch2 = ctk.StringVar(value = "Pitch is unknown")
+    varAirtime2 = ctk.StringVar(value = "Airtime (ticks) is unknown")
+    varAirtimeSeconds2 = ctk.StringVar(value = "Airtime (seconds) is unknown")
+    varFuzeTime2 = ctk.StringVar(value = "Fuze time (ticks) is unknown")
+
     results = ctk.CTkFrame(master=frame)
 
 
@@ -140,12 +167,16 @@ def main():
     results.columnconfigure(2, weight=1)
     results.columnconfigure(3, weight=1)
     results.columnconfigure(4, weight=1)
+    results.columnconfigure(5, weight=1)
 
     labelYaw = ctk.CTkLabel(master=results, textvariable=varYaw)
     labelPitch = ctk.CTkLabel(master=results, textvariable=varPitch)
     labelAirtime = ctk.CTkLabel(master=results, textvariable=varAirtime)
     labelAirtimeSeconds = ctk.CTkLabel(master=results, textvariable=varAirtimeSeconds)
     labelFuzeTime = ctk.CTkLabel(master=results, textvariable=varFuzeTime)
+
+    labelTrajectory1 = ctk.CTkLabel(master=results, text="Trajectory 1 :")
+    labelTrajectory2 = ctk.CTkLabel(master=results, text="Trajectory 2 :")
 
     button = ctk.CTkButton(master=frame, text="Calculate !", command=getAngles, state="disabled", width=300, height=40)
 
@@ -190,17 +221,37 @@ def main():
 
     results.grid(column=0, row=7, pady=12, padx=20, columnspan=4, sticky="NSEW")
 
-    labelYaw.grid(column=0, row=0, pady=12, padx=10)
-    labelPitch.grid(column=1, row=0, pady=12, padx=10)
-    labelAirtime.grid(column=2, row=0, pady=12, padx=10)
-    labelAirtimeSeconds.grid(column=3, row=0, pady=12, padx=10)
-    labelFuzeTime.grid(column=4, row=0, pady=12, padx=10)
+    labelYaw.grid(column=1, row=0, pady=6, padx=10)
+    labelPitch.grid(column=2, row=0, pady=6, padx=10)
+    labelAirtime.grid(column=3, row=0, pady=6, padx=10)
+    labelAirtimeSeconds.grid(column=4, row=0, pady=6, padx=10)
+    labelFuzeTime.grid(column=5, row=0, pady=6, padx=10)
+
+    # make place in the result frame for an eventual second result, those are the same as the first ones and must be hidden by default
+
+    labelYaw2 = ctk.CTkLabel(master=results, textvariable=varYaw2)
+    labelPitch2 = ctk.CTkLabel(master=results, textvariable=varPitch2)
+    labelAirtime2 = ctk.CTkLabel(master=results, textvariable=varAirtime2)
+    labelAirtimeSeconds2 = ctk.CTkLabel(master=results, textvariable=varAirtimeSeconds2)
+    labelFuzeTime2 = ctk.CTkLabel(master=results, textvariable=varFuzeTime2)
+
+    labelYaw2.grid(column=1, row=1, pady=6, padx=10)
+    labelPitch2.grid(column=2, row=1, pady=6, padx=10)
+    labelAirtime2.grid(column=3, row=1, pady=6, padx=10)
+    labelAirtimeSeconds2.grid(column=4, row=1, pady=6, padx=10)
+    labelFuzeTime2.grid(column=5, row=1, pady=6, padx=10)
+
+    labelTrajectory1.grid(column=0, row=0, pady=6, padx=10, columnspan=1)
+    labelTrajectory2.grid(column=0, row=1, pady=6, padx=10, columnspan=1)
+
+    # status = ctk.CTkLabel(master=frame, text="Ready to calculate !", font=("Roboto", 16))
 
     status.grid(column=0, row=8, pady=0, padx=20, columnspan=4, sticky="NSEW")
 
     root.bind("<Key>", controlButton)
 
     root.mainloop()
+
 
 if __name__ == "__main__":
     main()
