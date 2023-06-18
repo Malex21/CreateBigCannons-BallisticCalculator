@@ -61,7 +61,7 @@ def getAngles():
     try:
 
         angles = BallisticsToTarget(cannonCoords, targetCoords, int(powerEntry.get()), (directionEntry.get()).lower(), int(lenghtEntry.get()))
-        print(angles)
+
     except OutOfRangeException as e:
 
         statusMessage.set(e)
@@ -74,12 +74,14 @@ def getAngles():
         varAirtime.set("Airtime in ticks : " + str(angles[0][2]) + " ticks")
         varAirtimeSeconds.set("Airtime in seconds : " + str(angles[0][3]) + " seconds")
         varFuzeTime.set("Time to put in fuze (in ticks) : " + str(angles[0][4]) + " ticks")
+        varPrecision.set("Relative precision : " + str(angles[0][5]) + "%")
 
         varYaw2.set("Yaw : " + str(angles[1][0]) + " degrees")
         varPitch2.set("Pitch : " + str(angles[1][1]) + " degrees")
         varAirtime2.set("Airtime in ticks : " + str(angles[1][2]) + " ticks")
         varAirtimeSeconds2.set("Airtime in seconds : " + str(angles[1][3]) + " seconds")
         varFuzeTime2.set("Time to put in fuze (in ticks) : " + str(angles[1][4]) + " ticks")
+        varPrecision2.set("Relative precision : " + str(angles[1][5]) + "%")
 
         # make the pitch red if it's too high or too low
         if angles[0][1] == "Over 60" or angles[0][1] == "Under -30":
@@ -101,7 +103,7 @@ def main():
     powerEntry, directionEntry, button, statusMessage, status,\
     varYaw, varPitch, varAirtime, varAirtimeSeconds, varFuzeTime,\
     varYaw2, varPitch2, varAirtime2, varAirtimeSeconds2, varFuzeTime2,\
-    labelPitch, labelPitch2
+    labelPitch, labelPitch2, varPrecision, varPrecision2
 
     titre = ctk.CTkLabel(master=root, text="Ballistic Calculator", font=("Roboto", 60), fg_color="#1E538D", corner_radius=20)
 
@@ -152,12 +154,14 @@ def main():
     varAirtime = ctk.StringVar(value = "Airtime (ticks) is unknown")
     varAirtimeSeconds = ctk.StringVar(value = "Airtime (seconds) is unknown")
     varFuzeTime = ctk.StringVar(value = "Fuze time (ticks) is unknown")
+    varPrecision = ctk.StringVar(value = "Precision is unknown")
 
     varYaw2 = ctk.StringVar(value = "Yaw is unknown")
     varPitch2 = ctk.StringVar(value = "Pitch is unknown")
     varAirtime2 = ctk.StringVar(value = "Airtime (ticks) is unknown")
     varAirtimeSeconds2 = ctk.StringVar(value = "Airtime (seconds) is unknown")
     varFuzeTime2 = ctk.StringVar(value = "Fuze time (ticks) is unknown")
+    varPrecision2 = ctk.StringVar(value = "Precision is unknown")
 
     results = ctk.CTkFrame(master=frame)
 
@@ -168,12 +172,14 @@ def main():
     results.columnconfigure(3, weight=1)
     results.columnconfigure(4, weight=1)
     results.columnconfigure(5, weight=1)
+    results.columnconfigure(6, weight=1)
 
     labelYaw = ctk.CTkLabel(master=results, textvariable=varYaw)
     labelPitch = ctk.CTkLabel(master=results, textvariable=varPitch)
     labelAirtime = ctk.CTkLabel(master=results, textvariable=varAirtime)
     labelAirtimeSeconds = ctk.CTkLabel(master=results, textvariable=varAirtimeSeconds)
     labelFuzeTime = ctk.CTkLabel(master=results, textvariable=varFuzeTime)
+    labelPrecision = ctk.CTkLabel(master=results, textvariable=varPrecision)
 
     labelTrajectory1 = ctk.CTkLabel(master=results, text="Trajectory 1 :")
     labelTrajectory2 = ctk.CTkLabel(master=results, text="Trajectory 2 :")
@@ -226,6 +232,7 @@ def main():
     labelAirtime.grid(column=3, row=0, pady=6, padx=10)
     labelAirtimeSeconds.grid(column=4, row=0, pady=6, padx=10)
     labelFuzeTime.grid(column=5, row=0, pady=6, padx=10)
+    labelPrecision.grid(column=6, row=0, pady=6, padx=10)
 
     # make place in the result frame for an eventual second result, those are the same as the first ones and must be hidden by default
 
@@ -234,12 +241,14 @@ def main():
     labelAirtime2 = ctk.CTkLabel(master=results, textvariable=varAirtime2)
     labelAirtimeSeconds2 = ctk.CTkLabel(master=results, textvariable=varAirtimeSeconds2)
     labelFuzeTime2 = ctk.CTkLabel(master=results, textvariable=varFuzeTime2)
+    labelPrecision2 = ctk.CTkLabel(master=results, textvariable=varPrecision2)
 
     labelYaw2.grid(column=1, row=1, pady=6, padx=10)
     labelPitch2.grid(column=2, row=1, pady=6, padx=10)
     labelAirtime2.grid(column=3, row=1, pady=6, padx=10)
     labelAirtimeSeconds2.grid(column=4, row=1, pady=6, padx=10)
     labelFuzeTime2.grid(column=5, row=1, pady=6, padx=10)
+    labelPrecision2.grid(column=6, row=1, pady=6, padx=10)
 
     labelTrajectory1.grid(column=0, row=0, pady=6, padx=10, columnspan=1)
     labelTrajectory2.grid(column=0, row=1, pady=6, padx=10, columnspan=1)

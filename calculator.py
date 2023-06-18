@@ -65,8 +65,6 @@ def getFirstElement(array):
     return array[0]
 
 
-
-
 def BallisticsToTarget(cannon, target, power, direction, lenght):
     """Function that calculates the elevation angle to hit the target with a cannon
 
@@ -110,10 +108,12 @@ def BallisticsToTarget(cannon, target, power, direction, lenght):
             for i in range(1, len(tab)):
                 if tab[i - 1][0] < tab[i][0]:
                     return tab[i - 1]
+            return tab[-1]
         elif sens == -1:
             for i in reversed(range(0, len(tab) - 1)):
                 if tab[i][0] > tab[i + 1][0]:
                     return tab[i + 1]
+            return tab[0]
         else:
             raise ValueError("sens must be 1 or -1")
 
@@ -294,6 +294,9 @@ def BallisticsToTarget(cannon, target, power, direction, lenght):
     fuzeTime1 = int(airtime1 + (deltaTime1 / 2) - 10)
     fuzeTime2 = int(airtime2 + (deltaTime2 / 2) - 10)
 
+    precision1 = round(1 - deltaTime1 / airtime1, 2) * 100
+    precision2 = round(1 - deltaTime2 / airtime2, 2) * 100
+
     return (
     (
         yaw,
@@ -301,6 +304,7 @@ def BallisticsToTarget(cannon, target, power, direction, lenght):
         airtime1,
         round(airtimeSeconds1, 2),
         fuzeTime1,
+        precision1,
     ),
     (
         yaw,
@@ -308,6 +312,7 @@ def BallisticsToTarget(cannon, target, power, direction, lenght):
         airtime2,
         round(airtimeSeconds2, 2),
         fuzeTime2,
+        precision2,
     )
         )
 
