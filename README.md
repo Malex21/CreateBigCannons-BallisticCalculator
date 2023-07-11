@@ -1,5 +1,6 @@
 # Create Big Cannons : Ballistic Calculator
-![image](https://user-images.githubusercontent.com/96785178/236646755-6cc4e52f-693f-4ab0-b87e-f2cb2ae89f06.png)
+![image](https://github.com/Malex21/CreateBigCannons-BallisticCalculator/assets/96785178/7e2e47f8-c82b-4931-9e47-6c770f65fa4a)
+
 
 ## What is this ?
 
@@ -22,6 +23,15 @@ The lenght of the cannon is the number of blocks between the cannon block held b
 
 The direction expected is the direction your cannon is facing when it is not activated/mounted. Press F3 and you will find the direction.
 
+Relative precision is a quick way to determine whether a shot is precise or not. The higher it is, the more likely the shot is gonna hit.
+More precisely, a high relative precision means that the shell should land *relatively* close to the target.
+For example, firing on a close target will land the shot closer than on a far target, and yet relative precision remains unchanged between those 2 targets ;
+that is because the area of what we consider "close" gets bigger on longer distances.
+
+The current formula for calculating this value remains experimental !
+
+As of v1.1.0, there are now two trajectories calculated (steep and shallow).
+
 ## But how do I make my cannon aim the right way ?
 
 In the next versions of Create Big Cannons, there *might* be an advanced mount which will allow you to input precise angles into the cannon.
@@ -41,7 +51,7 @@ I try to aim my cannon by putting my character head next to the block held by th
 
 If something is not working correctly, please make an issue here.
 
-If the program says the angle is -30° (minimum angle) or 60° (maximum angle of cannons), it's probably wrong and means that the target is too elevated / too far down to be able to hit. I should soon add a clear message for that.
+If the cannon is a tad bit not powerful enough, the program might give very imprecise results. I am aware of this issue and working on it.
 
 ## Credits
 
