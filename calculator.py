@@ -8,6 +8,14 @@ def myLinspace(start, end, num):
     answer.append(end)
     return answer
 
+# filters numbers from linspace between max and min
+def flinspace(start, stop, num_elements, min, max):
+    items = []
+    for item in myLinspace(start, stop, num_elements):
+        if item < min or item > max: continue
+        items.append(item)
+    return items
+
 class OutOfRangeException(Exception):
     pass
 
@@ -72,7 +80,7 @@ def getFirstElement(array):
     return array[0]
 
 
-def BallisticsToTarget(cannon, target, power, direction, lenght):
+def BallisticsToTarget(cannon, target, power, direction, lenght, check_impossible = True, max_delta_t_error=1):
     """Function that calculates the elevation angle to hit the target with a cannon
 
     Args:
@@ -81,6 +89,8 @@ def BallisticsToTarget(cannon, target, power, direction, lenght):
         power (int): Power of the cannon / Number of powder charges
         direction (str): Direction of the cannon (East, West...)
         lenght (int): Lenght of the cannon from mount to tip
+        check_impossible (bool): check if the resulting pitch's delta_t exceeds max delta_t error
+        max_delta_t_error (float): maximum discrepancy between horizontal and vertical times to target.
 
     Returns:
         tuple: The yaw, pitch required and predicted airtime of the projectile (yaw, pitch, airtime, fuzeTime)
@@ -141,7 +151,7 @@ def BallisticsToTarget(cannon, target, power, direction, lenght):
 
 
         deltaTimes = []
-        for triedPitch in myLinspace(low, high, nbOfElements):
+        for triedPitch in flinspace(low, high, nbOfElements, -30, 60):
             # Bias that the cannon is probably gonna aim up instead of down
             # No use for now, useful for a later optimisation
 
@@ -266,7 +276,7 @@ def BallisticsToTarget(cannon, target, power, direction, lenght):
             deltaTimes.append((deltaT, triedPitch, deltaT + timeToTarget))
 
         if len(deltaTimes) == 0:
-            raise OutOfRangeException("The target is unreachable with your current canon configuration !")
+            return -1, -1, -1
 
         deltaTime, pitch, timeAir = min(deltaTimes, key=getFirstElement)
 
@@ -277,20 +287,24 @@ def BallisticsToTarget(cannon, target, power, direction, lenght):
 
 
     (deltaTime1, pitch1, airtime1), (deltaTime2, pitch2, airtime2) = tryAllAngles(-30, 60, 21)
-    
+
+    c1 = True
+    c2 = not pitch1 == pitch2  # calculate second
+    same_res = pitch1 == pitch2  # If high shot is the same as low shot then don't calculate unnecessary
     for i in range(0, nbOfIterations):
-        (deltaTime1, pitch1, airtime1) = tryAllAnglesUnique(pitch1 - 10**(-i), pitch1 + 10**(-i), 21)
-        (deltaTime2, pitch2, airtime2) = tryAllAnglesUnique(pitch2 - 10**(-i), pitch2 + 10**(-i), 21)
-    
-    if pitch1 > 60.5:
-        pitch1 = "Over 60"
-    elif pitch1 < -29.5:
-        pitch1 = "Under -30"
-    
-    if pitch2 > 60.5:
-        pitch2 = "Over 60"
-    elif pitch2 < -29.5:
-        pitch2 = "Under -30"
+        if c1: (deltaTime1, pitch1, airtime1) = tryAllAnglesUnique(pitch1 - 10**(-i), pitch1 + 10**(-i), 21)
+        if c2: (deltaTime2, pitch2, airtime2) = tryAllAnglesUnique(pitch2 - 10**(-i), pitch2 + 10**(-i), 21)
+
+        if deltaTime1 == -1: c1 = False
+        if deltaTime2 == -1: c2 = False
+
+        if not c1 and not c2:
+            raise OutOfRangeException("The target is unreachable with your current canon configuration !")
+
+    if same_res: deltaTime2, pitch2, airtime2 = deltaTime1, pitch1, airtime1
+
+    if check_impossible and deltaTime1 > max_delta_t_error: pitch1 = "Exceeds max delta_t error"
+    if check_impossible and deltaTime2 > max_delta_t_error: pitch2 = "Exceeds max delta_t error"
 
     airtimeSeconds1 = airtime1 / 20
     airtimeSeconds2 = airtime2 / 20
