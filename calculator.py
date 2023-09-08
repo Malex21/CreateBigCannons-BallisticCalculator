@@ -26,6 +26,7 @@ def timeInAir(y0, y, Vy):
         int: Airtime of projectile in ticks / "Error" if timeout
     """
     t = 0
+    t_below = 999_999_999
 
     if y0 <= y:
         # If cannon is lower than a target, simulating the way, up to the targets level
@@ -39,11 +40,12 @@ def timeInAir(y0, y, Vy):
             t += 1
 
             if y0 > y:  # Will break when the projectile gets higher than target
+                t_below = t-1
                 break
 
             # If the projectile stopped ascending before going above target then it will never hit it, so return early
             if y0 - y0p < 0:
-                return "Error"
+                return -1, -1
 
     while t < 100000:
 
@@ -54,8 +56,8 @@ def timeInAir(y0, y, Vy):
 
         # Returns only when projectile is at same level than target or lower
         if y0 <= y:
-            return t
-    return "Error"
+            return t_below, t
+    return t_below, -1
 
 
 def getFirstElement(array):
@@ -164,11 +166,17 @@ def BallisticsToTarget(cannon, target, power, direction, lenght):
 
             yCoordOfEndBarrel = cannon[1] + sin(triedPitchRad) * lenght
 
-            timeAir = timeInAir(yCoordOfEndBarrel, target[1], Vy)
-            if type(timeAir) is str:
-                continue
+            t_below, t_above = timeInAir(yCoordOfEndBarrel, target[1], Vy)
+            if t_below < 0: continue
 
-            deltaT = abs(timeToTarget - timeAir)
+            # if target is above cannon it may hit on ascension
+            # if target is possible to hit and it doesn't hit on ascension then "timeToTarget - t_below" will
+            # be basically timeToTarget + 1 so it will always just calculate "timeToTarget - t_above"
+            deltaT = min(
+                abs(timeToTarget - t_below),
+                abs(timeToTarget - t_above)
+            )
+
             # We calculate the difference between the time to target and airtime of the shell
             # The way this whole thing works is by comparing those values
             # We try to find the angle that corresponds the most to the timeToTarget
@@ -180,7 +188,7 @@ def BallisticsToTarget(cannon, target, power, direction, lenght):
             by every airTime possible (Bruteforcing every angle between -30 and 60 degrees)
             """
 
-            deltaTimes.append((deltaT, triedPitch, timeAir))
+            deltaTimes.append((deltaT, triedPitch, deltaT + timeToTarget))
 
         if len(deltaTimes) == 0:
             raise OutOfRangeException("The target is unreachable with your current canon configuration !")
@@ -234,11 +242,16 @@ def BallisticsToTarget(cannon, target, power, direction, lenght):
 
             yCoordOfEndBarrel = cannon[1] + sin(triedPitchRad) * lenght
 
-            timeAir = timeInAir(yCoordOfEndBarrel, target[1], Vy)
-            if type(timeAir) is str:
-                continue
+            t_below, t_above = timeInAir(yCoordOfEndBarrel, target[1], Vy)
+            if t_below < 0: continue
 
-            deltaT = abs(timeToTarget - timeAir)
+            # if target is above cannon it may hit on ascension
+            # if target is possible to hit and it doesn't hit on ascension then "timeToTarget - t_below" will
+            # be basically timeToTarget + 1 so it will always just calculate "timeToTarget - t_above"
+            deltaT = min(
+                abs(timeToTarget - t_below),
+                abs(timeToTarget - t_above)
+            )
             # We calculate the difference between the time to target and airtime of the shell
             # The way this whole thing works is by comparing those values
             # We try to find the angle that corresponds the most to the timeToTarget
@@ -250,7 +263,7 @@ def BallisticsToTarget(cannon, target, power, direction, lenght):
             by every airTime possible (Bruteforcing every angle between -30 and 60 degrees)
             """
 
-            deltaTimes.append((deltaT, triedPitch, timeAir))
+            deltaTimes.append((deltaT, triedPitch, deltaT + timeToTarget))
 
         if len(deltaTimes) == 0:
             raise OutOfRangeException("The target is unreachable with your current canon configuration !")
