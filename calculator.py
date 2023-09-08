@@ -8,14 +8,6 @@ def myLinspace(start, end, num):
     answer.append(end)
     return answer
 
-# filters numbers from linspace between max and min
-def flinspace(start, stop, num_elements, min, max):
-    items = []
-    for item in myLinspace(start, stop, num_elements):
-        if item < min or item > max: continue
-        items.append(item)
-    return items
-
 class OutOfRangeException(Exception):
     pass
 
@@ -151,7 +143,7 @@ def BallisticsToTarget(cannon, target, power, direction, lenght, check_impossibl
 
 
         deltaTimes = []
-        for triedPitch in flinspace(low, high, nbOfElements, -30, 60):
+        for triedPitch in myLinspace(max(low, -30), min(high, 60), nbOfElements):
             # Bias that the cannon is probably gonna aim up instead of down
             # No use for now, useful for a later optimisation
 
