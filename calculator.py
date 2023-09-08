@@ -32,6 +32,7 @@ def timeInAir(y0, y, Vy):
 
         while t < 100000:
 
+            y0p = y0
             y0 += Vy
             Vy = 0.99 * Vy - 0.05
 
@@ -39,6 +40,10 @@ def timeInAir(y0, y, Vy):
 
             if y0 > y:  # Will break when the projectile gets higher than target
                 break
+
+            # If the projectile stopped ascending before going above target then it will never hit it, so return early
+            if y0 - y0p < 0:
+                return "Error"
 
     while t < 100000:
 
