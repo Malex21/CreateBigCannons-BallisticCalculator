@@ -28,33 +28,50 @@ More precisely, a high relative precision means that the shell should land *rela
 For example, firing on a close target will land the shot closer than on a far target, and yet relative precision remains unchanged between those 2 targets ;
 that is because the area of what we consider "close" gets bigger on longer distances.
 
-The current formula for calculating this value remains experimental !
+The current formula for calculating this value (relative precision) remains experimental !
 
 As of v1.1.0, there are now two trajectories calculated (steep and shallow).
 
 ## But how do I make my cannon aim the right way ?
 
-In the next versions of Create Big Cannons, there *might* be an advanced mount which will allow you to input precise angles into the cannon.
+An "advanced cannon mount" is currently planned to release in Create Big Cannons 0.6.0 which is not yet out.
+This mount allows you to aim the cannon through a GUI where you should be able to input the angles.
+
+There are also create contraptions which allow you to aim your cannon through Computer Craft.
+You can find examples of such contraptions in the #showcase channel in the [Create Big Cannons discord server](https://discord.gg/vgfMMUUgvT).
 
 However, without Computer Craft, it is hard to aim your cannon precisely.
 
+### Manual aiming
+
 What I do to aim my cannon manually is to press F3, and I can check the angles my character has (Horizontal and vertical angle).
 The horizontal angle is relative to the south direction (0° means south) and is positive when facing west (90° means west). And 180°/-180° means north, and -90° means east.
+
 Don't forget that the program will give you the yaw (horizontal) angle relative to the direction you gave it, and it will give you the angle between 0° and 360° clockwise. This should change in the future.
+
 I try to aim my cannon by putting my character head next to the block held by the mount, and then I will try to get my character angles to be the same pitch than the program gives (In minecraft, looking up gives a negative pitch angle while the program considers up to be "positive") and I will aim the cannon until it's aiming where I'm looking. It's the same thing for the yaw angle.
 
 ## Where can I find those player angles ?
 
 ![angles](https://user-images.githubusercontent.com/96785178/236646396-8c34bdc7-cfea-48ee-acf8-0a54e753ecd0.png)
 
+## How does it work ?
+
+This program calculates the angles through bruteforcing. There is currently no known public direct formula that provides the angles, or at least none that I know of.
+Although this program bruteforces the angles, it is still very fast.
+
+I might post more details here, but sashafiesta's demonstration in the [Create Big Cannons discord server](https://discord.gg/vgfMMUUgvT) covers pretty much everything (pinned in #showcase as of now). In case of doubt on how it functions I invite you to read the comments in the code (in calculator.py, the other .py is just graphics stuff).
+
+I and many others have tried to find a direct formula but as far as I know no one succeeded in doing so. I have my doubts that such formula actually exists.
+
 ## Issues
 
 If something is not working correctly, please make an issue here.
 
-If the cannon is a tad bit not powerful enough, the program might give very imprecise results. I am aware of this issue and working on it.
+If the cannon is a tad bit not powerful enough, the program might give very imprecise results. I am aware of this issue and working on it. (Might be fixed through SuperSpaceEye's pull request, to test)
 
-## Credits
+## Credits (on Discord)
 
-**@sashafiesta#1978 (Discord) :** Original formulas and principles, you can find their very good demonstration in the Create Big Cannons discord server (as of now, pinned in #showcase).
+**@sashafiesta :** Original formulas and principles, you can find their very good demonstration in the Create Big Cannons discord server (as of now, pinned in #showcase).
 
-**@Malex#6461 (Me) :** Python adaptation, this user interface, some changes and improvements on the original formulas.
+**@malexy (Me) :** Python adaptation, this user interface, some changes and improvements on the original formulas.
