@@ -1,4 +1,9 @@
+
 from math import sin, cos, atan, sqrt, pi, radians, log
+
+class OutOfRangeException(Exception):
+    pass
+
 
 def myLinspace(start, end, num):
     answer = [start]
@@ -7,9 +12,6 @@ def myLinspace(start, end, num):
         answer.append(answer[-1] + delta)
     answer.append(end)
     return answer
-
-class OutOfRangeException(Exception):
-    pass
 
 def timeInAir(y0, y, Vy):
     """Find the air time of the projectile, using recursive sequence.
@@ -97,7 +99,7 @@ def BallisticsToTarget(cannon, target, power, direction, lenght, check_impossibl
     distance = sqrt(Dx * Dx + Dz * Dz)
     # Horizontal distance between target and mount
 
-    initialSpeed = power
+    initialSpeed = power * 2
 
     nbOfIterations = 5  # by default
 
