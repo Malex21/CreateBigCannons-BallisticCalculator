@@ -1,4 +1,9 @@
+
 from math import sin, cos, atan, sqrt, pi, radians, log
+
+class OutOfRangeException(Exception):
+    pass
+
 
 def myLinspace(start, end, num):
     answer = [start]
@@ -7,9 +12,6 @@ def myLinspace(start, end, num):
         answer.append(answer[-1] + delta)
     answer.append(end)
     return answer
-
-class OutOfRangeException(Exception):
-    pass
 
 def timeInAir(y0, y, Vy):
     """Find the air time of the projectile, using recursive sequence.
@@ -23,9 +25,10 @@ def timeInAir(y0, y, Vy):
         Vy (float): vertical velocity of the projectile
 
     Returns:
-        int: Airtime of projectile in ticks / "Error" if timeout
+        (int, int): Airtime of projectile in ticks / -1 if can't hit from (below / above)
     """
     t = 0
+    t_below = 999_999_999
 
     if y0 <= y:
         # If cannon is lower than a target, simulating the way, up to the targets level
@@ -38,7 +41,12 @@ def timeInAir(y0, y, Vy):
             t += 1
 
             if y0 > y:  # Will break when the projectile gets higher than target
+                t_below = t-1
                 break
+
+            # If the projectile stopped ascending before going above target then it will never hit it, so return early
+            if Vy < 0:
+                return -1, -1
 
     while t < 100000:
 
@@ -49,21 +57,25 @@ def timeInAir(y0, y, Vy):
 
         # Returns only when projectile is at same level than target or lower
         if y0 <= y:
-            return t
-    return "Error"
-
+            return t_below, t
+    return -1, -1
 
 def getFirstElement(array):
-    """Gives the first element of an array, only use as key for min()
-
-    Args:
-        array (list): The array from which we take the element
-
-    Returns:
-        float: The element return, it's always a float
-    """
     return array[0]
 
+def getRoot(tab, sens):
+    if sens == 1:
+        for i in range(1, len(tab)):
+            if tab[i - 1][0] < tab[i][0]:
+                return tab[i - 1]
+        return tab[-1]
+    elif sens == -1:
+        for i in reversed(range(0, len(tab) - 1)):
+            if tab[i][0] > tab[i + 1][0]:
+                return tab[i + 1]
+        return tab[0]
+    else:
+        raise ValueError("sens must be 1 or -1")
 
 def BallisticsToTarget(cannon, target, power, direction, lenght):
     """Function that calculates the elevation angle to hit the target with a cannon
@@ -88,7 +100,7 @@ def BallisticsToTarget(cannon, target, power, direction, lenght):
     distance = sqrt(Dx * Dx + Dz * Dz)
     # Horizontal distance between target and mount
 
-    initialSpeed = power
+    initialSpeed = power * 2
 
     nbOfIterations = 5  # by default
 
@@ -102,20 +114,6 @@ def BallisticsToTarget(cannon, target, power, direction, lenght):
 
     pitch: float
     # Let's bruteforce pitch !
-
-    def getRoot(tab, sens):
-        if sens == 1:
-            for i in range(1, len(tab)):
-                if tab[i - 1][0] < tab[i][0]:
-                    return tab[i - 1]
-            return tab[-1]
-        elif sens == -1:
-            for i in reversed(range(0, len(tab) - 1)):
-                if tab[i][0] > tab[i + 1][0]:
-                    return tab[i + 1]
-            return tab[0]
-        else:
-            raise ValueError("sens must be 1 or -1")
 
     def tryAllAngles(low, high, nbOfElements):
         """Bruteforce every angle between low and high, and returns the one that corresponds the most to the timeToTarget
@@ -159,11 +157,17 @@ def BallisticsToTarget(cannon, target, power, direction, lenght):
 
             yCoordOfEndBarrel = cannon[1] + sin(triedPitchRad) * lenght
 
-            timeAir = timeInAir(yCoordOfEndBarrel, target[1], Vy)
-            if type(timeAir) is str:
-                continue
+            t_below, t_above = timeInAir(yCoordOfEndBarrel, target[1], Vy)
+            if t_below < 0: continue
 
-            deltaT = abs(timeToTarget - timeAir)
+            # if target is above cannon it may hit on ascension
+            # if target is possible to hit and it doesn't hit on ascension then "timeToTarget - t_below" will
+            # be basically timeToTarget + 1 so it will always just calculate "timeToTarget - t_above"
+            deltaT = min(
+                abs(timeToTarget - t_below),
+                abs(timeToTarget - t_above)
+            )
+
             # We calculate the difference between the time to target and airtime of the shell
             # The way this whole thing works is by comparing those values
             # We try to find the angle that corresponds the most to the timeToTarget
@@ -175,7 +179,7 @@ def BallisticsToTarget(cannon, target, power, direction, lenght):
             by every airTime possible (Bruteforcing every angle between -30 and 60 degrees)
             """
 
-            deltaTimes.append((deltaT, triedPitch, timeAir))
+            deltaTimes.append((deltaT, triedPitch, deltaT + timeToTarget))
 
         if len(deltaTimes) == 0:
             raise OutOfRangeException("The target is unreachable with your current canon configuration !")
@@ -229,11 +233,16 @@ def BallisticsToTarget(cannon, target, power, direction, lenght):
 
             yCoordOfEndBarrel = cannon[1] + sin(triedPitchRad) * lenght
 
-            timeAir = timeInAir(yCoordOfEndBarrel, target[1], Vy)
-            if type(timeAir) is str:
-                continue
+            t_below, t_above = timeInAir(yCoordOfEndBarrel, target[1], Vy)
+            if t_below < 0: continue
 
-            deltaT = abs(timeToTarget - timeAir)
+            # if target is above cannon it may hit on ascension
+            # if target is possible to hit and it doesn't hit on ascension then "timeToTarget - t_below" will
+            # be basically timeToTarget + 1 so it will always just calculate "timeToTarget - t_above"
+            deltaT = min(
+                abs(timeToTarget - t_below),
+                abs(timeToTarget - t_above)
+            )
             # We calculate the difference between the time to target and airtime of the shell
             # The way this whole thing works is by comparing those values
             # We try to find the angle that corresponds the most to the timeToTarget
@@ -245,7 +254,7 @@ def BallisticsToTarget(cannon, target, power, direction, lenght):
             by every airTime possible (Bruteforcing every angle between -30 and 60 degrees)
             """
 
-            deltaTimes.append((deltaT, triedPitch, timeAir))
+            deltaTimes.append((deltaT, triedPitch, deltaT + timeToTarget))
 
         if len(deltaTimes) == 0:
             raise OutOfRangeException("The target is unreachable with your current canon configuration !")
@@ -258,7 +267,7 @@ def BallisticsToTarget(cannon, target, power, direction, lenght):
         # We do the same thing, but near pitch, to get a more precise angle
 
 
-    (deltaTime1, pitch1, airtime1), (deltaTime2, pitch2, airtime2) = tryAllAngles(-30, 60, 21)
+    (deltaTime1, pitch1, airtime1), (deltaTime2, pitch2, airtime2) = tryAllAngles(-30, 60, 91)
     
     for i in range(0, nbOfIterations):
         (deltaTime1, pitch1, airtime1) = tryAllAnglesUnique(pitch1 - 10**(-i), pitch1 + 10**(-i), 21)
