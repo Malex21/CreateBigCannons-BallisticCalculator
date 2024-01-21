@@ -64,6 +64,21 @@ I might post more details here, but sashafiesta's demonstration in the [Create B
 
 I and many others have tried to find a direct formula but as far as I know no one succeeded in doing so. I have my doubts that such formula actually exists.
 
+## Build instructions
+
+Python version used is 3.9.13 64-bit.
+
+Copy the repo in some folder. You need to have customtkinter installed (do so through pip)
+In order to build, use Pyinstaller in a venv (to get the size down since you then have less libraries installed).
+
+Example command : 
+pyinstaller --noconfirm --onefile --windowed --name "CBC BC v1.2.0" --add-data "path to calculator.py" --add-data "C:/Users/<user>/AppData/Local/Packages/PythonSoftwareFoundation.Python.3.9_qbz5n2kfra8p0/LocalCache/local-packages/Python39/site-packages/customtkinter;customtkinter/"  "path to gui.py"
+
+Note that your target file should be gui, as it is the one importing calculator.py. Also, you absolutely have to --add-data your customtkinter **folder** , else it won't work.
+You might have to install customtkinter on the venv too.
+
+The exe should appear in a "dist" folder located in the directory where your cmd is.
+
 ## Issues
 
 If something is not working correctly, please make an issue here.
