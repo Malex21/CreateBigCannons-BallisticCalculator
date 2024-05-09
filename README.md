@@ -42,18 +42,7 @@ You can find examples of such contraptions in the #showcase channel in the [Crea
 
 However, without Computer Craft, it is hard to aim your cannon precisely.
 
-### Manual aiming
-
-What I do to aim my cannon manually is to press F3, and I can check the angles my character has (Horizontal and vertical angle).
-The horizontal angle is relative to the south direction (0° means south) and is positive when facing west (90° means west). And 180°/-180° means north, and -90° means east.
-
-Don't forget that the program will give you the yaw (horizontal) angle relative to the direction you gave it, and it will give you the angle between 0° and 360° clockwise. This should change in the future.
-
-I try to aim my cannon by putting my character head next to the block held by the mount, and then I will try to get my character angles to be the same pitch than the program gives (In minecraft, looking up gives a negative pitch angle while the program considers up to be "positive") and I will aim the cannon until it's aiming where I'm looking. It's the same thing for the yaw angle.
-
-## Where can I find those player angles ?
-
-![angles](https://user-images.githubusercontent.com/96785178/236646396-8c34bdc7-cfea-48ee-acf8-0a54e753ecd0.png)
+In the latest versions of Create : Big Cannons, simply looking with goggles at the cannon mount holding an active cannon will make yaw and pitch appear.
 
 ## How does it work ?
 
